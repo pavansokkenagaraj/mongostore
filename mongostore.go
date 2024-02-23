@@ -1,5 +1,6 @@
 // Copyright 2012 The KidStuff Authors.
 // Copyright (c) 2022 Bos Hieu.
+// Copyright (c) 2024 Pavan Sokke Nagaraj.
 // All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -218,4 +219,15 @@ func (m *MongoStore) delete(session *sessions.Session) error {
 
 func makeFilterByID(sessionID string) bson.D {
 	return bson.D{{Key: "_id", Value: sessionID}}
+}
+
+// MaxLength restricts the maximum length of new sessions to l.
+// If l is 0 there is no limit to the size of a session, use with caution.
+// The default for a new Store is 4096.
+func (m *MongoStore) MaxLength(l int) {
+	for _, c := range m.Codecs {
+		if codec, ok := c.(*securecookie.SecureCookie); ok {
+			codec.MaxLength(l)
+		}
+	}
 }
